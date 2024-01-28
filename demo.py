@@ -10,8 +10,6 @@ BAD = ['👎', '😱', '🤬', '😢', '🤮', '💩', '😭', '😈', '😴', '
 
 def main():
     global last_update_id
-    with open('messages.txt', 'w') as file:
-        file.write('1234 7777777777\n')
     while True:
         updates = requests.get(f"https://api.telegram.org/bot{BOT_TOKEN}/getUpdates?offset={last_update_id}&allowed_updates={json.dumps(ALLOWED_UPDATES)}").json().get('result', [])
         for update in updates:
@@ -71,6 +69,9 @@ def main():
                                 ret = ret + line.split()[1] + " -> " + record + "\n"
                             broadcast(update['message']['from']['id'], update['message']['from']['first_name'],update['message']['chat']['id'], f"\n<strong>TOP reaction makers:</strong>\n<em>{ret}</em>")
                         requests.post(f"https://api.telegram.org/bot{BOT_TOKEN}/deleteMessage?chat_id={update['message']['chat']['id']}&message_id={update['message']['message_id']}")
+                    elif update['message']['text'] == '/INITIALIZE' and update['message']['from']['id'] == ADMIN:
+                        initialize()
+                        broadcast(ADMIN, 'Admin', update['message']['chat']['id'], '<strong>System restarted!</strong>')
                 append(f"{update['message']['message_id']} {update['message']['from']['id']}")
             elif 'message_reaction' in update:
                 print(update['message_reaction'])
@@ -168,6 +169,10 @@ def is_admin(chat_id, user_id):
             return True
         else:
             return False
+
+def initialize():
+    with open('messages.txt', 'w') as file:
+        file.write('1234 7777777777\n')
 
 if __name__ == "__main__":
     main()
