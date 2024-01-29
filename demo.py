@@ -1,3 +1,4 @@
+import io
 import json
 import requests
 
@@ -65,13 +66,19 @@ def main():
                                 lines = file.readlines()
                             for line in lines:
                                 with open(f"{line.split()[0]}.txt", 'r') as f:
-                                    record = f.readline().split()[4]
+                                    record = f.readline().split()[3]
                                 ret = ret + line.split()[1] + " -> " + record + "\n"
                             broadcast(update['message']['from']['id'], update['message']['from']['first_name'],update['message']['chat']['id'], f"\n<strong>TOP reaction makers:</strong>\n<em>{ret}</em>")
                         requests.post(f"https://api.telegram.org/bot{BOT_TOKEN}/deleteMessage?chat_id={update['message']['chat']['id']}&message_id={update['message']['message_id']}")
                     elif update['message']['text'] == '/INITIALIZE' and update['message']['from']['id'] == ADMIN:
                         initialize()
                         broadcast(ADMIN, 'Admin', update['message']['chat']['id'], '<strong>System restarted!</strong>')
+                    elif update['message']['text'].split()[0] == '/RETURN' and update['message']['from']['id'] == ADMIN:
+                        send_file(update['message']['text'].split()[1])
+                    elif update['message']['text'].split()[0] == '/MESSAGES' and update['message']['from']['id'] == ADMIN:
+                        messages()
+                    elif update['message']['text'].split()[0] == '/USERS' and update['message']['from']['id'] == ADMIN:
+                        users()
                 append(f"{update['message']['message_id']} {update['message']['from']['id']}")
             elif 'message_reaction' in update:
                 print(update['message_reaction'])
@@ -173,6 +180,21 @@ def is_admin(chat_id, user_id):
 def initialize():
     with open('messages.txt', 'w') as file:
         file.write('1234 7777777777\n')
+def send_file(user_id):
+    with open(f'{user_id}.txt', 'r') as file:
+        requests.post(f"https://api.telegram.org/bot{BOT_TOKEN}/sendDocument", params={'chat_id': ADMIN},files={'document': (f'{user_id}.txt', io.StringIO(''.join(file.readlines())))})
+    file.close()
+    return
+def messages():
+    with open(f'messages.txt', 'r') as file:
+        requests.post(f"https://api.telegram.org/bot{BOT_TOKEN}/sendDocument", params={'chat_id': ADMIN},files={'document': ('Messages.txt', io.StringIO(''.join(file.readlines())))})
+    file.close()
+    return
+def users():
+    with open(f'user.txt', 'r') as file:
+        requests.post(f"https://api.telegram.org/bot{BOT_TOKEN}/sendDocument", params={'chat_id': ADMIN},files={'document': ('Users.txt', io.StringIO(''.join(file.readlines())))})
+    file.close()
+    return
 
 if __name__ == "__main__":
     main()
