@@ -61,14 +61,20 @@ def main():
                         requests.post(f"https://api.telegram.org/bot{BOT_TOKEN}/deleteMessage?chat_id={update['message']['chat']['id']}&message_id={update['message']['message_id']}")
                     elif update['message']['text'] == '/show_all@reactioner_bot':
                         if is_admin(update['message']['chat']['id'], update['message']['from']['id']):
-                            ret = ''
+                            set1 = set()
+                            set2 = set()
+                            set3 = set()
+                            set4 = set()
                             with open('user.txt', 'r') as file:
                                 lines = file.readlines()
-                            for line in lines:
-                                with open(f"{line.split()[0]}.txt", 'r') as f:
-                                    record = f.readline().split()[3]
-                                ret = ret + line.split()[1] + " -> " + record + "\n"
-                            broadcast(update['message']['from']['id'], update['message']['from']['first_name'],update['message']['chat']['id'], f"\n<strong>TOP reaction makers:</strong>\n<em>{ret}</em>")
+                            for l in lines:
+                                with open(f"{l.split()[0]}.txt", 'r') as f:
+                                    line = f.readline().split()
+                                set3.add(line[3] + " -> " + l.split()[1] + "\n")
+                                set1.add(line[1] + " -> " + l.split()[1] + "\n")
+                                set2.add(line[2] + " -> " + l.split()[1] + "\n")
+                                set4.add(line[4] + " -> " + l.split()[1] + "\n")
+                            broadcast(update['message']['from']['id'], update['message']['from']['first_name'],update['message']['chat']['id'], f"\n<strong>TOP admired users:</strong>\n<em>{sorted(set1, reverse=True)[0]}{sorted(set1, reverse=True)[1]}{sorted(set1, reverse=True)[2]}</em>\n\n<strong>TOP hated users:</strong>\n<em>{sorted(set2, reverse=True)[0]}{sorted(set2, reverse=True)[1]}{sorted(set2, reverse=True)[2]}\n\n</em><strong>TOP reaction makers:</strong>\n<em>{sorted(set3, reverse=True)[0]}{sorted(set3, reverse=True)[1]}{sorted(set3, reverse=True)[2]}</em>\n\n<strong>TOP neutrally reacted users:</strong>\n<em>{sorted(set4, reverse=True)[0]}{sorted(set4, reverse=True)[1]}{sorted(set4, reverse=True)[2]}</em>")
                         requests.post(f"https://api.telegram.org/bot{BOT_TOKEN}/deleteMessage?chat_id={update['message']['chat']['id']}&message_id={update['message']['message_id']}")
                     elif update['message']['text'] == '/INITIALIZE' and update['message']['from']['id'] == ADMIN:
                         initialize()
@@ -169,7 +175,16 @@ def broadcast(user_id, name, group, message):
         'text': m + message,
         'parse_mode': 'HTML',
     }
-    requests.post(f'https://api.telegram.org/bot{BOT_TOKEN}/sendMessage', params=params)
+    id_to_react = requests.post(f'https://api.telegram.org/bot{BOT_TOKEN}/sendMessage', params=params).json().get('result').get('message_id')
+    print(id_to_react)
+    params = {
+        'chat_id': group,
+        'message_id': id_to_react,
+        'is_big': True,
+        'old_reaction': [],
+        'new_reaction': [{'type': 'emoji', 'emoji': '🔥'}]
+    }
+    print(requests.post(f'https://api.telegram.org/bot{BOT_TOKEN}/setMessageReaction', params=params).json())
 
 def is_admin(chat_id, user_id):
         if user_id == ADMIN or requests.get(f'https://api.telegram.org/bot{BOT_TOKEN}/getChatMember?chat_id={chat_id}&user_id={user_id}').json()['result']['status'] in ['administrator', 'creator']:
