@@ -1,13 +1,14 @@
 import io
 import json
 import requests
+from itertools import islice
 
 BOT_TOKEN = '6773788903:AAHKjSPGVF3NZhl-mtsZ8R9b_qRrTkM90Wo'
 ALLOWED_UPDATES = ['message', 'message_reaction']
 ADMIN = 5934725286
 last_update_id = -1
-GOOD = ['👍', '❤', '🔥', '🥰', '👏', '😁', '🎉', '🤩', '💯', '😍', '❤️', '💋', '😇', '🤗', '💘', '😘', '🏆', '⚡', '🤝']
-BAD = ['👎', '😱', '🤬', '😢', '🤮', '💩', '😭', '😈', '😴', '😡', '🤔', '🤯', '🎃', '👻', '🥱', '🥴', '🐳', '🌭', '🤣', '🍌', '💔', '🍓', '🍾', '🖕', '😨', '🙄']
+GOOD = ['👍', '🤣', '❤', '🔥', '🥰', '👏', '😁', '🎉', '🙏', '🕊', '🤩', '🐳', '💯', '😍', '❤️', '💋', '😇', '🤗', '💘', '😘', '🏆', '⚡', '🤝', '👨‍💻', '🫡', '😘', '😎']
+BAD = ['👎', '😱', '🤬', '😢', '🤮', '💩', '😭', '😈', '😴', '😡', '🤔', '🤯', '🎃', '👻', '🥱', '🥴', '🌭', '🤣', '🍌', '💔', '🍓', '🍾', '🖕', '😨', '🙄', '🌚', '🤪', '💊']
 
 def main():
     global last_update_id
@@ -61,20 +62,36 @@ def main():
                         requests.post(f"https://api.telegram.org/bot{BOT_TOKEN}/deleteMessage?chat_id={update['message']['chat']['id']}&message_id={update['message']['message_id']}")
                     elif update['message']['text'] == '/show_all@reactioner_bot':
                         if is_admin(update['message']['chat']['id'], update['message']['from']['id']):
-                            set1 = set()
-                            set2 = set()
-                            set3 = set()
-                            set4 = set()
+                            set1 = {}
+                            set2 = {}
+                            set3 = {}
+                            set4 = {}
                             with open('user.txt', 'r') as file:
                                 lines = file.readlines()
                             for l in lines:
                                 with open(f"{l.split()[0]}.txt", 'r') as f:
                                     line = f.readline().split()
-                                set3.add(line[3] + " -> " + l.split()[1] + "\n")
-                                set1.add(line[1] + " -> " + l.split()[1] + "\n")
-                                set2.add(line[2] + " -> " + l.split()[1] + "\n")
-                                set4.add(line[4] + " -> " + l.split()[1] + "\n")
-                            broadcast(update['message']['from']['id'], update['message']['from']['first_name'],update['message']['chat']['id'], f"\n<strong>TOP admired users:</strong>\n<em>{sorted(set1, reverse=True)[0]}{sorted(set1, reverse=True)[1]}{sorted(set1, reverse=True)[2]}</em>\n\n<strong>TOP hated users:</strong>\n<em>{sorted(set2, reverse=True)[0]}{sorted(set2, reverse=True)[1]}{sorted(set2, reverse=True)[2]}\n\n</em><strong>TOP reaction makers:</strong>\n<em>{sorted(set3, reverse=True)[0]}{sorted(set3, reverse=True)[1]}{sorted(set3, reverse=True)[2]}</em>\n\n<strong>TOP neutrally reacted users:</strong>\n<em>{sorted(set4, reverse=True)[0]}{sorted(set4, reverse=True)[1]}{sorted(set4, reverse=True)[2]}</em>")
+                                set3[l.split()[1] + " -> "] = int(line[3])
+                                set1[l.split()[1] + " -> "] = int(line[1])
+                                set2[l.split()[1] + " -> "] = int(line[2])
+                                set4[l.split()[1] + " -> "] = int(line[4])
+                            set1 = dict(sorted(set1.items(), key=lambda item: item[1], reverse=True))
+                            set2 = dict(sorted(set2.items(), key=lambda item: item[1], reverse=True))
+                            set3 = dict(sorted(set3.items(), key=lambda item: item[1], reverse=True))
+                            set4 = dict(sorted(set4.items(), key=lambda item: item[1], reverse=True))
+                            ret = '\n<strong>TOP admired users:</strong>'
+                            for key, value in islice(set1.items(), 3):
+                                ret += '\n<em>' + key + '</em>' + str(value)
+                            ret += '\n\n<strong>TOP hated users:</strong>'
+                            for key, value in islice(set2.items(), 3):
+                                ret += '\n<em>' + key + '</em>' + str(value)
+                            ret += '\n\n<strong>TOP reaction makers:</strong>'
+                            for key, value in islice(set3.items(), 3):
+                                ret += '\n<em>' + key + '</em>' + str(value)
+                            ret += '\n\n<strong>TOP neutrally reacted users:</strong>'
+                            for key, value in islice(set4.items(), 3):
+                                ret += '\n<em>' + key + '</em>' + str(value)
+                            broadcast(update['message']['from']['id'], update['message']['from']['first_name'],update['message']['chat']['id'], ret)
                         requests.post(f"https://api.telegram.org/bot{BOT_TOKEN}/deleteMessage?chat_id={update['message']['chat']['id']}&message_id={update['message']['message_id']}")
                     elif update['message']['text'] == '/INITIALIZE' and update['message']['from']['id'] == ADMIN:
                         initialize()
@@ -87,13 +104,11 @@ def main():
                         users()
                 append(f"{update['message']['message_id']} {update['message']['from']['id']}")
             elif 'message_reaction' in update:
-                print(update['message_reaction'])
                 if 'chat' in update['message_reaction'] and (update['message_reaction']['chat']['type'] == 'group' or update['message_reaction']['chat']['type'] == 'supergroup') and included(update['message_reaction']['user']['id']):
                     case = fetch(update['message_reaction']['message_id'])
                     for reaction in update['message_reaction']['new_reaction']:
                         if reaction.get('type') != 'emoji':
-                            broadcast(update['message_reaction']['user']['id'], update['message_reaction']['user']['first_name'], update['message_reaction']['chat']['id'],'<strong>I dont support premium emojis for now.</strong>')
-                            break
+                            broadcast(update['message_reaction']['user']['id'], update['message_reaction']['user']['first_name'], update['message_reaction']['chat']['id'],'<strong>I will count it as a neutral reaction!</strong>')
                         type = is_good(reaction.get('emoji', 'UNKNOWN'))
                         try:
                             with open(f"{update['message_reaction']['user']['id']}.txt", 'r') as file:
@@ -114,8 +129,7 @@ def main():
                             pass
                     for reaction in update['message_reaction']['old_reaction']:
                         if reaction.get('type') != 'emoji':
-                            broadcast(update['message_reaction']['from']['id'], update['message_reaction']['from']['first_name'], update['message_reaction']['chat']['id'],'<strong>I dont support premium emojis for now</strong>')
-                            break
+                            broadcast(update['message_reaction']['from']['id'], update['message_reaction']['from']['first_name'], update['message_reaction']['chat']['id'],'<strong>I will count it as a neutral reaction!</strong>')
                         type = is_good(reaction.get('emoji', 'UNKNOWN'))
                         try:
                             with open(f"{update['message_reaction']['user']['id']}.txt", 'r') as file:
