@@ -215,8 +215,7 @@ def broadcast(user_id, name, group, message):
         'chat_id': group,
         'message_id': id_to_react,
         'is_big': True,
-        'old_reaction': [],
-        'new_reaction': [{'type': 'emoji', 'emoji': '🔥'}]
+        'reaction': json.dumps([{'type': 'emoji', 'emoji': '🔥'}])
     }
     print(requests.post(f'https://api.telegram.org/bot{BOT_TOKEN}/setMessageReaction', params=params).json())
 
