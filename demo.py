@@ -80,16 +80,16 @@ def main():
                             set3 = dict(sorted(set3.items(), key=lambda item: item[1], reverse=True))
                             set4 = dict(sorted(set4.items(), key=lambda item: item[1], reverse=True))
                             ret = '\n<strong>TOP admired users:</strong>'
-                            for key, value in islice(set1.items(), 3):
+                            for key, value in islice(set1.items(), 5):
                                 ret += '\n<em>' + key + '</em>' + str(value)
                             ret += '\n\n<strong>TOP hated users:</strong>'
-                            for key, value in islice(set2.items(), 3):
+                            for key, value in islice(set2.items(), 5):
                                 ret += '\n<em>' + key + '</em>' + str(value)
                             ret += '\n\n<strong>TOP reaction makers:</strong>'
-                            for key, value in islice(set3.items(), 3):
+                            for key, value in islice(set3.items(), 5):
                                 ret += '\n<em>' + key + '</em>' + str(value)
                             ret += '\n\n<strong>TOP neutrally reacted users:</strong>'
-                            for key, value in islice(set4.items(), 3):
+                            for key, value in islice(set4.items(), 5):
                                 ret += '\n<em>' + key + '</em>' + str(value)
                             broadcast(update['message']['from']['id'], update['message']['from']['first_name'],update['message']['chat']['id'], ret)
                         requests.post(f"https://api.telegram.org/bot{BOT_TOKEN}/deleteMessage?chat_id={update['message']['chat']['id']}&message_id={update['message']['message_id']}")
