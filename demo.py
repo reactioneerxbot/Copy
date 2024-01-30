@@ -24,13 +24,13 @@ def main():
                             with open(f"{update['message']['from']['id']}.txt", 'r') as file:
                                 line = file.readline().split()
                             with open(f"{update['message']['from']['id']}.txt", 'w') as file:
-                                file.write(f"I {line[1]} {line[2]} {line[3]} {line[4]}")
+                                file.write(f"I {line[1]} {line[2]} {line[3]} {line[4]} {line[5]}")
                             broadcast(update['message']['from']['id'], update['message']['from']['first_name'], update['message']['chat']['id'],'<em>Welcome back. You enrolled successfully.</em>')
                             with open('user.txt', 'a') as file:
                                 file.write(f"{update['message']['from']['id']} {update['message']['from']['first_name']}\n")
                         else:
                             with open(f"{update['message']['from']['id']}.txt", 'w') as file:
-                                file.write(f"I {0} {0} {0} {0}")
+                                file.write(f"I {0} {0} {0} {0} {0}")
                             broadcast(update['message']['from']['id'], update['message']['from']['first_name'], update['message']['chat']['id'], '<em>You enrolled successfully.</em>')
                             with open('user.txt', 'a') as file:
                                 file.write(f"{update['message']['from']['id']} {update['message']['from']['first_name']}\n")
@@ -40,7 +40,7 @@ def main():
                             with open(f"{update['message']['from']['id']}.txt", 'r') as file:
                                 line = file.readline().split()
                             with open(f"{update['message']['from']['id']}.txt", 'w') as file:
-                                file.write(f"E {line[1]} {line[2]} {line[3]} {line[4]}")
+                                file.write(f"E {line[1]} {line[2]} {line[3]} {line[4]} {line[5]}")
                             broadcast(update['message']['from']['id'], update['message']['from']['first_name'], update['message']['chat']['id'],'<em>Bye you stopped enrolling.</em>')
                             with open('user.txt', 'r') as file:
                                 lines = file.readlines()
@@ -52,20 +52,21 @@ def main():
                         else:
                             broadcast(update['message']['from']['id'], update['message']['from']['first_name'], update['message']['chat']['id'],'<em>You have not started enrolling at all.</em>')
                         requests.post(f"https://api.telegram.org/bot{BOT_TOKEN}/deleteMessage?chat_id={update['message']['chat']['id']}&message_id={update['message']['message_id']}")
-                    elif update['message']['text'] == '/show@reactioner_bot':
+                    elif update['message']['text'] == '/stats@reactioner_bot':
                         if included(update['message']['from']['id']) == 1:
                             with open(f"{update['message']['from']['id']}.txt", 'r') as file:
                                 line = file.readline().split()
-                            broadcast(update['message']['from']['id'], update['message']['from']['first_name'], update['message']['chat']['id'], f"<strong>Your statistics:</strong>\n\n<em>Positive reactions:</em> {line[1]}\n<em>Negative reactions:</em> {line[2]}\n<em>Neutral reactions:</em> {line[4]}\n\n<strong>Total reactions you got:</strong> {int(line[1]) + int(line[2]) + int(line[4])}\n<strong>Total reactions you put:</strong> {line[3]}")
+                            broadcast(update['message']['from']['id'], update['message']['from']['first_name'], update['message']['chat']['id'], f"<strong>Your statistics:</strong>\n\n<em>Positive reactions:</em> {line[1]}\n<em>Negative reactions:</em> {line[2]}\n<em>Neutral reactions:</em> {line[4]}\n<em>Self reactions:</em> {line[5]}\n\n<strong>Total reactions you got:</strong> {int(line[1]) + int(line[2]) + int(line[4])}\n<strong>Total reactions you put:</strong> {line[3]}")
                         else:
                             broadcast(update['message']['from']['id'], update['message']['from']['first_name'], update['message']['chat']['id'], f"<strong>You have not included.</strong>\n<em>Please /include@reactioner_bot</em>")
                         requests.post(f"https://api.telegram.org/bot{BOT_TOKEN}/deleteMessage?chat_id={update['message']['chat']['id']}&message_id={update['message']['message_id']}")
-                    elif update['message']['text'] == '/show_all@reactioner_bot':
+                    elif update['message']['text'] == '/results@reactioner_bot':
                         if is_admin(update['message']['chat']['id'], update['message']['from']['id']):
                             set1 = {}
                             set2 = {}
                             set3 = {}
                             set4 = {}
+                            set5 = {}
                             with open('user.txt', 'r') as file:
                                 lines = file.readlines()
                             for l in lines:
@@ -75,21 +76,26 @@ def main():
                                 set1[l.split()[1] + " -> "] = int(line[1])
                                 set2[l.split()[1] + " -> "] = int(line[2])
                                 set4[l.split()[1] + " -> "] = int(line[4])
+                                set5[l.split()[1] + " -> "] = int(line[5])
                             set1 = dict(sorted(set1.items(), key=lambda item: item[1], reverse=True))
                             set2 = dict(sorted(set2.items(), key=lambda item: item[1], reverse=True))
                             set3 = dict(sorted(set3.items(), key=lambda item: item[1], reverse=True))
                             set4 = dict(sorted(set4.items(), key=lambda item: item[1], reverse=True))
+                            set5 = dict(sorted(set5.items(), key=lambda item: item[1], reverse=True))
                             ret = '\n<strong>TOP admired users:</strong>'
                             for key, value in islice(set1.items(), 5):
                                 ret += '\n<em>' + key + '</em>' + str(value)
                             ret += '\n\n<strong>TOP hated users:</strong>'
                             for key, value in islice(set2.items(), 5):
                                 ret += '\n<em>' + key + '</em>' + str(value)
+                            ret += '\n\n<strong>TOP neutrally reacted users:</strong>'
+                            for key, value in islice(set4.items(), 5):
+                                ret += '\n<em>' + key + '</em>' + str(value)
                             ret += '\n\n<strong>TOP reaction makers:</strong>'
                             for key, value in islice(set3.items(), 5):
                                 ret += '\n<em>' + key + '</em>' + str(value)
-                            ret += '\n\n<strong>TOP neutrally reacted users:</strong>'
-                            for key, value in islice(set4.items(), 5):
+                            ret += '\n\n<strong>TOP self reacted users:</strong>'
+                            for key, value in islice(set5.items(), 5):
                                 ret += '\n<em>' + key + '</em>' + str(value)
                             broadcast(update['message']['from']['id'], update['message']['from']['first_name'],update['message']['chat']['id'], ret)
                         requests.post(f"https://api.telegram.org/bot{BOT_TOKEN}/deleteMessage?chat_id={update['message']['chat']['id']}&message_id={update['message']['message_id']}")
@@ -111,20 +117,27 @@ def main():
                             broadcast(update['message_reaction']['user']['id'], update['message_reaction']['user']['first_name'], update['message_reaction']['chat']['id'],'<strong>I will count it as a neutral reaction!</strong>')
                         type = is_good(reaction.get('emoji', 'UNKNOWN'))
                         try:
-                            with open(f"{update['message_reaction']['user']['id']}.txt", 'r') as file:
-                                line = file.readline().split()
-                            with open(f"{str(update['message_reaction']['user']['id']).strip()}.txt", 'w') as file:
-                                file.write(f"I {line[1]} {line[2]} {str(int(line[3]) + 1)} {line[4]}")
+                            if int(case) != update['message_reaction']['user']['id']:
+                                with open(f"{update['message_reaction']['user']['id']}.txt", 'r') as file:
+                                    line = file.readline().split()
+                                with open(f"{str(update['message_reaction']['user']['id']).strip()}.txt", 'w') as file:
+                                    file.write(f"I {line[1]} {line[2]} {str(int(line[3]) + 1)} {line[4]} {line[5]}")
+                            else:
+                                with open(f"{update['message_reaction']['user']['id']}.txt", 'r') as file:
+                                    line = file.readline().split()
+                                with open(f"{str(update['message_reaction']['user']['id']).strip()}.txt", 'w') as file:
+                                    file.write(f"I {line[1]} {line[2]} {line[3]} {line[4]} {str(int(line[5]) + 1)}")
+                                break
                             if case != -1:
                                 with open(f"{case}.txt", 'r') as file:
                                     line = file.readline().split()
                                 with open(f"{case}.txt", 'w') as file:
                                     if type == -1:
-                                        file.write(f"{line[0]} {line[1]} {str(int(line[2]) + 1)} {line[3]} {line[4]}")
+                                        file.write(f"{line[0]} {line[1]} {str(int(line[2]) + 1)} {line[3]} {line[4]} {line[5]}")
                                     elif type == 1:
-                                        file.write(f"{line[0]} {str(int(line[1]) + 1)} {line[2]} {line[3]} {line[4]}")
+                                        file.write(f"{line[0]} {str(int(line[1]) + 1)} {line[2]} {line[3]} {line[4]} {line[5]}")
                                     else:
-                                        file.write(f"{line[0]} {line[1]} {line[2]} {line[3]} {str(int(line[4]) + 1)}")
+                                        file.write(f"{line[0]} {line[1]} {line[2]} {line[3]} {str(int(line[4]) + 1)} {line[5]}")
                         except:
                             pass
                     for reaction in update['message_reaction']['old_reaction']:
@@ -132,20 +145,27 @@ def main():
                             broadcast(update['message_reaction']['from']['id'], update['message_reaction']['from']['first_name'], update['message_reaction']['chat']['id'],'<strong>I will count it as a neutral reaction!</strong>')
                         type = is_good(reaction.get('emoji', 'UNKNOWN'))
                         try:
-                            with open(f"{update['message_reaction']['user']['id']}.txt", 'r') as file:
-                                line = file.readline().split()
-                            with open(f"{str(update['message_reaction']['user']['id']).strip()}.txt", 'w') as file:
-                                file.write(f"I {line[1]} {line[2]} {str(int(line[3]) - 1)} {line[4]}")
+                            if int(case) != update['message_reaction']['user']['id']:
+                                with open(f"{update['message_reaction']['user']['id']}.txt", 'r') as file:
+                                    line = file.readline().split()
+                                with open(f"{str(update['message_reaction']['user']['id']).strip()}.txt", 'w') as file:
+                                    file.write(f"I {line[1]} {line[2]} {str(int(line[3]) - 1)} {line[4]} {line[5]}")
+                            else:
+                                with open(f"{update['message_reaction']['user']['id']}.txt", 'r') as file:
+                                    line = file.readline().split()
+                                with open(f"{str(update['message_reaction']['user']['id']).strip()}.txt", 'w') as file:
+                                    file.write(f"I {line[1]} {line[2]} {line[3]} {line[4]} {str(int(line[5]) - 1)}")
+                                break
                             if case != -1:
                                 with open(f"{case}.txt", 'r') as file:
                                     line = file.readline().split()
                                 with open(f"{case}.txt", 'w') as file:
                                     if type == -1:
-                                        file.write(f"{line[0]} {line[1]} {str(int(line[2]) - 1)} {line[3]} {line[4]}")
+                                        file.write(f"{line[0]} {line[1]} {str(int(line[2]) - 1)} {line[3]} {line[4]} {line[5]}")
                                     elif type == 1:
-                                        file.write(f"{line[0]} {str(int(line[1]) - 1)} {line[2]} {line[3]} {line[4]}")
+                                        file.write(f"{line[0]} {str(int(line[1]) - 1)} {line[2]} {line[3]} {line[4]} {line[5]}")
                                     else:
-                                        file.write(f"{line[0]} {line[1]} {line[2]} {line[3]} {str(int(line[4]) - 1)}")
+                                        file.write(f"{line[0]} {line[1]} {line[2]} {line[3]} {str(int(line[4]) - 1)} {line[5]}")
                         except:
                             pass
             last_update_id = update['update_id'] + 1
