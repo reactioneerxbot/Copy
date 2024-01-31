@@ -16,6 +16,7 @@ def main():
         updates = requests.get(f"https://api.telegram.org/bot{BOT_TOKEN}/getUpdates?offset={last_update_id}&allowed_updates={json.dumps(ALLOWED_UPDATES)}").json().get('result', [])
         for update in updates:
             if 'message' in update:
+                print(update['message']['chat']['id'])
                 if 'text' in update['message'] and 'chat' in update['message'] and (update['message']['chat']['type'] == 'group' or update['message']['chat']['type'] == 'supergroup'):
                     if update['message']['text'] == '/include@reactioner_bot':
                         if included(update['message']['from']['id']) == 1:
@@ -27,13 +28,13 @@ def main():
                                 file.write(f"I {line[1]} {line[2]} {line[3]} {line[4]} {line[5]}")
                             broadcast(update['message']['from']['id'], update['message']['from']['first_name'], update['message']['chat']['id'],'<em>Welcome back. You enrolled successfully.</em>')
                             with open('user.txt', 'a') as file:
-                                file.write(f"{update['message']['from']['id']} {update['message']['from']['first_name']}\n")
+                                file.write(f"{update['message']['from']['id']} {update['message']['from']['first_name'].split()[0]} {update['message']['chat']['id']}\n")
                         else:
                             with open(f"{update['message']['from']['id']}.txt", 'w') as file:
                                 file.write(f"I {0} {0} {0} {0} {0}")
                             broadcast(update['message']['from']['id'], update['message']['from']['first_name'], update['message']['chat']['id'], '<em>You enrolled successfully.</em>')
                             with open('user.txt', 'a') as file:
-                                file.write(f"{update['message']['from']['id']} {update['message']['from']['first_name']}\n")
+                                file.write(f"{update['message']['from']['id']} {update['message']['from']['first_name'].split()[0]} {update['message']['chat']['id']}\n")
                         requests.post(f"https://api.telegram.org/bot{BOT_TOKEN}/deleteMessage?chat_id={update['message']['chat']['id']}&message_id={update['message']['message_id']}")
                     elif update['message']['text'] == '/exclude@reactioner_bot':
                         if included(update['message']['from']['id']) == 1:
@@ -56,32 +57,37 @@ def main():
                         if included(update['message']['from']['id']) == 1:
                             with open(f"{update['message']['from']['id']}.txt", 'r') as file:
                                 line = file.readline().split()
-                            broadcast(update['message']['from']['id'], update['message']['from']['first_name'], update['message']['chat']['id'], f"<strong>Your statistics:</strong>\n\n<em>Positive reactions:</em> {line[1]}\n<em>Negative reactions:</em> {line[2]}\n<em>Neutral reactions:</em> {line[4]}\n<em>Self reactions:</em> {line[5]}\n\n<strong>Total reactions you got:</strong> {int(line[1]) + int(line[2]) + int(line[4])}\n<strong>Total reactions you put:</strong> {line[3]}")
+                            broadcast(update['message']['from']['id'], update['message']['from']['first_name'], update['message']['chat']['id'], f"<strong>Your statistics:</strong>\n\n<em>Positive reactions:</em> {line[1]}\n<em>Negative reactions:</em> {line[2]}\n<em>Neutral reactions:</em> {line[4]}\n<em>Self reactions:</em> {line[5]}\n\n<strong>Total reactions you got:</strong> {int(line[1]) + int(line[2]) + int(line[4]) + int(line[5])}\n<strong>Total reactions you put:</strong> {line[3]}")
                         else:
                             broadcast(update['message']['from']['id'], update['message']['from']['first_name'], update['message']['chat']['id'], f"<strong>You have not included.</strong>\n<em>Please /include@reactioner_bot</em>")
                         requests.post(f"https://api.telegram.org/bot{BOT_TOKEN}/deleteMessage?chat_id={update['message']['chat']['id']}&message_id={update['message']['message_id']}")
                     elif update['message']['text'] == '/results@reactioner_bot':
                         if is_admin(update['message']['chat']['id'], update['message']['from']['id']):
+                            group = update['message']['chat']['id']
                             set1 = {}
                             set2 = {}
                             set3 = {}
                             set4 = {}
                             set5 = {}
+                            set6 = {}
                             with open('user.txt', 'r') as file:
                                 lines = file.readlines()
                             for l in lines:
-                                with open(f"{l.split()[0]}.txt", 'r') as f:
-                                    line = f.readline().split()
-                                set3[l.split()[1] + " -> "] = int(line[3])
-                                set1[l.split()[1] + " -> "] = int(line[1])
-                                set2[l.split()[1] + " -> "] = int(line[2])
-                                set4[l.split()[1] + " -> "] = int(line[4])
-                                set5[l.split()[1] + " -> "] = int(line[5])
+                                if int(l.split()[2]) == group:
+                                    with open(f"{l.split()[0]}.txt", 'r') as f:
+                                        line = f.readline().split()
+                                    set3[l.split()[1] + " -> "] = int(line[3])
+                                    set1[l.split()[1] + " -> "] = int(line[1])
+                                    set2[l.split()[1] + " -> "] = int(line[2])
+                                    set4[l.split()[1] + " -> "] = int(line[4])
+                                    set5[l.split()[1] + " -> "] = int(line[5])
+                                    set6[l.split()[1] + " -> "] = float((int(line[1]) - int(line[2])) / int(line[3]))
                             set1 = dict(sorted(set1.items(), key=lambda item: item[1], reverse=True))
                             set2 = dict(sorted(set2.items(), key=lambda item: item[1], reverse=True))
                             set3 = dict(sorted(set3.items(), key=lambda item: item[1], reverse=True))
                             set4 = dict(sorted(set4.items(), key=lambda item: item[1], reverse=True))
                             set5 = dict(sorted(set5.items(), key=lambda item: item[1], reverse=True))
+                            set6 = dict(sorted(set6.items(), key=lambda item: item[1], reverse=True))
                             ret = '\n<strong>TOP admired users:</strong>'
                             for key, value in islice(set1.items(), 5):
                                 ret += '\n<em>' + key + '</em>' + str(value)
@@ -96,6 +102,9 @@ def main():
                                 ret += '\n<em>' + key + '</em>' + str(value)
                             ret += '\n\n<strong>TOP self reacted users:</strong>'
                             for key, value in islice(set5.items(), 5):
+                                ret += '\n<em>' + key + '</em>' + str(value)
+                            ret += '\n\n<strong>Value coefficient:</strong>'
+                            for key, value in islice(set6.items(), 5):
                                 ret += '\n<em>' + key + '</em>' + str(value)
                             broadcast(update['message']['from']['id'], update['message']['from']['first_name'],update['message']['chat']['id'], ret)
                         requests.post(f"https://api.telegram.org/bot{BOT_TOKEN}/deleteMessage?chat_id={update['message']['chat']['id']}&message_id={update['message']['message_id']}")
