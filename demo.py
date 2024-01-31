@@ -45,7 +45,7 @@ def main():
                             broadcast(update['message']['from']['id'], update['message']['from']['first_name'], update['message']['chat']['id'],'<em>Bye you stopped enrolling.</em>')
                             with open('user.txt', 'r') as file:
                                 lines = file.readlines()
-                            updated = [line for line in lines if update['message']['from']['id'] not in line]
+                            updated = [line for line in lines if str(update['message']['from']['id']) not in line]
                             with open('user.txt', 'w') as file:
                                 file.writelines(updated)
                         elif included(update['message']['from']['id']) == 0:
