@@ -81,7 +81,8 @@ def main():
                                     set2[l.split()[1] + " -> "] = int(line[2])
                                     set4[l.split()[1] + " -> "] = int(line[4])
                                     set5[l.split()[1] + " -> "] = int(line[5])
-                                    set6[l.split()[1] + " -> "] = float((int(line[1]) - int(line[2])) / int(line[3]))
+                                    if int(line[3]) != 0:
+                                        set6[l.split()[1] + " -> "] = float((int(line[1]) - int(line[2])) / int(line[3]))
                             set1 = dict(sorted(set1.items(), key=lambda item: item[1], reverse=True))
                             set2 = dict(sorted(set2.items(), key=lambda item: item[1], reverse=True))
                             set3 = dict(sorted(set3.items(), key=lambda item: item[1], reverse=True))
