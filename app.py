@@ -2,7 +2,6 @@ import json
 import requests
 from flask import Flask, request
 
-# Replace with your actual Telegram bot token
 BOT_TOKEN = "6773788903:AAETlP7Hpt1mho2KibSjydZQneF212Jrzt4"
 BASE_TELEGRAM_URL = 'https://api.telegram.org/bot6773788903:AAETlP7Hpt1mho2KibSjydZQneF212Jrzt4/'
 
@@ -11,7 +10,6 @@ app = Flask(__name__)
 @app.route('/', methods=['POST'])
 def handle_webhook():
     try:
-        # Parse incoming JSON data (replace with more robust parsing if needed)
         data = json.loads(request.get_data())
         with open('r.txt', 'w') as file:
             file.write(json.dumps(data))
