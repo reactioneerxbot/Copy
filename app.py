@@ -40,7 +40,11 @@ def index():
        
         return Response('ok', status=200)
     else:
-        return "<h1>Welcome!</h1>"
+        try:
+            with open('random.txt', 'r') as file:
+                return file.readlines()
+        except:
+            return "<h1>Welcome!</h1>"
  
 if __name__ == '__main__':
    app.run(debug=True)
