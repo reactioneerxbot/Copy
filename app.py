@@ -22,7 +22,7 @@ def handle_telegram_update():
     return 'OK'
     
 @app.route('/', methods=['GET'])
-def handle_telegram_update():
+def handle_me():
     try:
         with open('random.txt', 'r') as file:
             return file.readline()
