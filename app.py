@@ -47,6 +47,6 @@ def index():
             return "<h1>Welcome!</h1>"
  
 if __name__ == '__main__':
-   with open('random.txt', 'a') as file:
+   with open('random.txt', 'w') as file:
        file.write(' ')
    app.run(debug=True)
