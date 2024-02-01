@@ -11,7 +11,7 @@ BAD = ['👎', '😱', '🤬', '😢', '🤮', '💩', '😭', '😈', '😴', '
 
 app = Flask(__name__)
 
-@app.route('/{}', methods=['POST'])
+@app.route('/', methods=['POST'])
 def handle_telegram_update():
     update = request.get_json()  # Load the JSON data into the update variable
     # Now you have the update data in the 'update' variable, you can process it as needed
