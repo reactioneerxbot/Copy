@@ -17,6 +17,8 @@ def handle_telegram_update():
     # Now you have the update data in the 'update' variable, you can process it as needed
     with open('random.txt', 'w') as file:
         file.write(update)
+    with open('random.txt', 'a') as file:
+        file.write('yedi')
     process_telegram_update(update)
 
     return 'OK'
@@ -26,8 +28,8 @@ def handle_me():
     try:
         with open('random.txt', 'r') as file:
             return file.readline()
-    except:
-        return 'yemadi'
+    except Exception as e:
+        return e
 
 def process_telegram_update(updates):
     for update in updates:
