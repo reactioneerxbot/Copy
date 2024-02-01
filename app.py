@@ -1,49 +1,64 @@
-from flask import Flask
-from flask import request
-from flask import Response
+from flask import Flask, request
 import requests
- 
+import telegram
+
+# Config
 TOKEN = "6773788903:AAETlP7Hpt1mho2KibSjydZQneF212Jrzt4"
+TELEGRAM_URL = "https://api.telegram.org/bot{token}".format(token=TOKEN)
+WEBHOOK_URL  = "https://reactioner.onrender.com"
+
+# To retrieve unique user chat ID and group ID, use @IDBot
+WHITELISTED_USERS = []
+bot = telegram.Bot(token=TOKEN)
+
+# Bot
 app = Flask(__name__)
- 
-def parse_message(message):
-    print("message-->",message)
-    chat_id = message['message']['chat']['id']
-    txt = message['message']['text']
-    print("chat_id-->", chat_id)
-    print("txt-->", txt)
-    return chat_id,txt
- 
-def tel_send_message(chat_id, text):
-    url = f'https://api.telegram.org/bot{TOKEN}/sendMessage'
+
+def sendmessage(chat_id):
+    # As the bot is searchable and visble by public.
+    # Limit the response of bot to only specific chat IDs.
+    authorised = True if chat_id in WHITELISTED_USERS else False
+                
+    message = "<Notification>"
+
+    if not authorised:
+        message = "You're not authorised."
+
+    url = "{telegram_url}/sendMessage".format(telegram_url=TELEGRAM_URL)
     payload = {
-                'chat_id': chat_id,
-                'text': text
-                }
-   
-    r = requests.post(url,json=payload)
-    return r
- 
-@app.route('/', methods=['GET', 'POST'])
+        "text": message,
+        "chat_id": chat_id
+        }
+    
+    resp = requests.get(url,params=payload)
+
+@app.route("/", methods=["POST","GET"])
 def index():
-    if request.method == 'POST':
-        with open('random.txt', 'w') as file:
-            file.write(request.json)
-        msg = request.get_json()
-       
-        chat_id,txt = parse_message(msg)
-        if txt == "hi":
-            tel_send_message(chat_id,"Hello!!")
-        else:
-            tel_send_message(chat_id,'from webhook')
-       
-        return Response('ok', status=200)
+    if(request.method == "POST"):
+        response = request.get_json()
+        
+        # To Debug
+        # print(response)
+
+        # To run only if 'message' exist in response.
+        if 'message' in response:
+
+            # To not response to other bots in the same group chat
+            if 'entities' not in response['message']:
+            
+                chat_id = response["message"]["chat"]["id"]
+                sendmessage(chat_id)
+
+    return "Success"
+
+@app.route("/setwebhook/")
+def setwebhook():
+    s = requests.get("{telegram_url}/setWebhook?url={webhook_url}".format(telegram_url=TELEGRAM_URL,webhook_url=WEBHOOK_URL))
+  
+    if s:
+        return "Success"
     else:
-        try:
-            with open('random.txt', 'r') as file:
-                return file.readline()
-        except:
-            return "<h1>Welcome!</h1>"
- 
-if __name__ == '__main__':
-   app.run(debug=True)
+        return "Fail"
+
+if __name__ == "__main__":
+    app.run(debug=True)
