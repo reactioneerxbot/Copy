@@ -27,6 +27,9 @@ def tel_send_message(chat_id, text):
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
+        with open('random.txt', 'w') as file:
+            file.write(request.get.json())
+            file.write(request.get_data())
         msg = request.get_json()
        
         chat_id,txt = parse_message(msg)
