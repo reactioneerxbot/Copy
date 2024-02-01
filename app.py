@@ -4,7 +4,7 @@ from flask import Response
 import requests
  
 TOKEN = "6773788903:AAHKjSPGVF3NZhl-mtsZ8R9b_qRrTkM90Wo"
-app = Flask(name)
+app = Flask(__name__)
  
 def parse_message(message):
     print("message-->",message)
@@ -39,5 +39,5 @@ def index():
     else:
         return "<h1>Welcome!</h1>"
  
-if name == 'main':
+if __name__ == '__main__':
    app.run(debug=True)
