@@ -15,9 +15,19 @@ app = Flask(__name__)
 def handle_telegram_update():
     update = request.get_json()  # Load the JSON data into the update variable
     # Now you have the update data in the 'update' variable, you can process it as needed
+    with open('random.txt', 'w') as file:
+        file.write(update)
     process_telegram_update(update)
 
     return 'OK'
+    
+@app.route('/', methods=['GET'])
+def handle_telegram_update():
+    try:
+        with open('random.txt', 'r') as file:
+            return file.readline()
+    except:
+        return 'yemadi'
 
 def process_telegram_update(updates):
     for update in updates:
