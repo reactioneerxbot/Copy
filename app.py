@@ -3,7 +3,7 @@ from flask import request
 from flask import Response
 import requests
  
-TOKEN = "6773788903:AAHKjSPGVF3NZhl-mtsZ8R9b_qRrTkM90Wo"
+TOKEN = "6773788903:AAETlP7Hpt1mho2KibSjydZQneF212Jrzt4"
 app = Flask(__name__)
  
 def parse_message(message):
@@ -28,7 +28,7 @@ def tel_send_message(chat_id, text):
 def index():
     if request.method == 'POST':
         with open('random.txt', 'a') as file:
-            file.write(request.get.json())
+            file.write(request.get_json())
             file.write(request.get_data())
         msg = request.get_json()
        
