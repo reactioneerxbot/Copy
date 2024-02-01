@@ -14,7 +14,7 @@ app = Flask(__name__)
 @app.route('/', methods=['POST'])
 def handle_telegram_update():
     update = json.loads(request.get_data().decode('utf-8'))  # Load the JSON data into the update variable
-
+    return update
     # Now you have the update data in the 'update' variable, you can process it as needed
     process_telegram_update(update)
 
