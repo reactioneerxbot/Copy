@@ -16,6 +16,7 @@ app = Flask(__name__)
 def handle_webhook():
     try:
         process(json.loads(request.get_data()))
+        return 'Success!'
     except Exception as e:
         return e
 def process(update):
