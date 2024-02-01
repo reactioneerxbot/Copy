@@ -14,7 +14,7 @@ def handle_webhook():
         # Parse incoming JSON data (replace with more robust parsing if needed)
         data = json.loads(request.get_data())
         with open('r.txt', 'w') as file:
-            file.write(data)
+            file.write(json.dumps(data))
         # Extract relevant information
         chat_id = data.get('message', {}).get('chat', {}).get('id')
         message_text = data.get('message', {}).get('text')
