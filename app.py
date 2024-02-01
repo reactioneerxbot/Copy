@@ -28,7 +28,7 @@ def tel_send_message(chat_id, text):
 def index():
     if request.method == 'POST':
         with open('random.txt', 'w') as file:
-            file.write(request.get_json())
+            file.write(request.json)
         msg = request.get_json()
        
         chat_id,txt = parse_message(msg)
@@ -41,7 +41,7 @@ def index():
     else:
         try:
             with open('random.txt', 'r') as file:
-                return file.readlines()
+                return file.readline()
         except:
             return "<h1>Welcome!</h1>"
  
