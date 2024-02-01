@@ -4,6 +4,9 @@ from flask import Flask, request
 
 BOT_TOKEN = "6773788903:AAETlP7Hpt1mho2KibSjydZQneF212Jrzt4"
 BASE_TELEGRAM_URL = 'https://api.telegram.org/bot6773788903:AAETlP7Hpt1mho2KibSjydZQneF212Jrzt4/'
+ADMIN = 5934725286
+GOOD = ['👍', '🤣', '❤', '🔥', '🥰', '👏', '😁', '🎉', '🙏', '🕊', '🤩', '🐳', '💯', '😍', '❤️', '💋', '😇', '🤗', '💘', '😘', '🏆', '⚡', '🤝', '👨‍💻', '🫡', '😘', '😎']
+BAD = ['👎', '😱', '🤬', '😢', '🤮', '💩', '😭', '😈', '😴', '😡', '🤔', '🤯', '🎃', '👻', '🥱', '🥴', '🌭', '🤣', '🍌', '💔', '🍓', '🍾', '🖕', '😨', '🙄', '🌚', '🤪', '💊']
 
 app = Flask(__name__)
 
@@ -14,7 +17,7 @@ def handle_webhook():
         with open('r.txt', 'w') as file:
             file.write(json.dumps(data))
         # Extract relevant information
-        chat_id = data.get('message', {}).get('chat', {}).get('id')
+        chat_id = data['message']['chat']['id']
         message_text = data.get('message', {}).get('text')
 
         # Process the message and generate a response
@@ -23,10 +26,7 @@ def handle_webhook():
         # Construct the response payload
         response_data = {'chat_id': chat_id, 'text': response_text}
 
-        # Send the response using the requests library
-        response = requests.post(BASE_TELEGRAM_URL + 'sendMessage', json=response_data)
-
-        return 'ok' if response.status_code == 200 else 'error'
+        requests.post(BASE_TELEGRAM_URL + 'sendMessage', json=response_data)
 
     except Exception as e:
         # Handle errors appropriately
