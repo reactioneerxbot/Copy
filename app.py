@@ -1,5 +1,7 @@
+import io
 import json
 import requests
+from itertools import islice
 from flask import Flask, request
 
 BOT_TOKEN = "6773788903:AAETlP7Hpt1mho2KibSjydZQneF212Jrzt4"
