@@ -125,6 +125,7 @@ def process(update):
                 users()
         append(f"{update['message']['message_id']} {update['message']['from']['id']}")
     elif 'message_reaction' in update:
+        print('reaction is captured')
         if 'chat' in update['message_reaction'] and (update['message_reaction']['chat']['type'] == 'group' or update['message_reaction']['chat']['type'] == 'supergroup') and included(update['message_reaction']['user']['id']):
             case = fetch(update['message_reaction']['message_id'])
             for reaction in update['message_reaction']['new_reaction']:
