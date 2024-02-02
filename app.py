@@ -182,6 +182,7 @@ def process(update):
                     pass
             for reaction in update['message_reaction']['old_reaction']:
                 if reaction.get('type') != 'emoji':
+                    return
                     broadcast(update['message_reaction']['from']['id'],
                               update['message_reaction']['from']['first_name'],
                               update['message_reaction']['chat']['id'],
