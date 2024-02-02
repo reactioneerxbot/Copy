@@ -151,6 +151,8 @@ def process(update):
             case = fetch(update['message_reaction']['message_id'])
             for reaction in update['message_reaction']['new_reaction']:
                 if reaction.get('type') != 'emoji':
+                    print(update['message_reaction']['new_reaction'])
+                    return
                     broadcast(update['message_reaction']['user']['id'],
                               update['message_reaction']['user']['first_name'],
                               update['message_reaction']['chat']['id'],
@@ -182,6 +184,7 @@ def process(update):
                     pass
             for reaction in update['message_reaction']['old_reaction']:
                 if reaction.get('type') != 'emoji':
+                    print(update['message_reaction']['old_reaction'])
                     return
                     broadcast(update['message_reaction']['from']['id'],
                               update['message_reaction']['from']['first_name'],
