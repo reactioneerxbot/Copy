@@ -212,7 +212,8 @@ def process(update):
                 except:
                     pass
     elif 'text' in update['message'] and 'chat' in update['message'] and update['message']['chat']['type'] == 'private':
-        private(update['message']['from']['id'])
+        print(1)
+        private(update['message']['chat']['id'])
 
 def included(user_id):
     try:
@@ -274,6 +275,7 @@ def broadcast(user_id, name, group, message):
     return
 
 def private(chat_id):
+    print(2)
     params = {"chat_id": chat_id,"text": "You need to add me to your group. Press the 'Add to Group' button below and select your group.","reply_markup": json.dumps({"keyboard": [[{"text": "Add to Group","request_chat": {"request_id": 1, "chat_is_channel": False,"user_administrator_rights": {"can_manage_chat": True,"can_invite_users": True,"can_delete_messages": True,"can_promote_members": True,"can_restrict_members": True,"can_pin_messages": True,"can_manage_topics": True},"bot_administrator_rights": {"can_manage_chat": True,"can_invite_users": True,"can_delete_messages": True,"can_promote_members": True,"can_restrict_members": True,"can_pin_messages": True,"can_manage_topics": True}}}]],"resize_keyboard": True})}
     print(requests.post(f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage", json=params).json())
     return
