@@ -271,7 +271,7 @@ def broadcast(user_id, name, group, message):
 
 def private(chat_id):
     params = {"chat_id": chat_id,"text": "ℹ️ In order to use me, you need to add me to your group. Press the button below and select your group.\nℹ️ Чтобы использовать меня, вам нужно добавить меня в свою группу. Нажмите кнопку ниже и выберите свою группу.\nℹ️ Mendan foydalanish uchun siz meni guruhingizga qo'shishingiz kerak. Quyidagi tugmani bosing va guruhingizni tanlang.","reply_markup": json.dumps({"keyboard": [[{"text": "Add | Добавлять | Qo'shish","request_chat": {"request_id": 1, "chat_is_channel": False,"user_administrator_rights": {"can_manage_chat": True,"can_invite_users": True,"can_delete_messages": True,"can_promote_members": True,"can_restrict_members": True,"can_pin_messages": True,"can_manage_topics": True},"bot_administrator_rights": {"can_manage_chat": True,"can_invite_users": True,"can_delete_messages": True,"can_promote_members": True,"can_restrict_members": True,"can_pin_messages": True,"can_manage_topics": True}}}]],"resize_keyboard": True})}
-    print(requests.post(f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage", json=params).json())
+    requests.post(f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage", json=params).json()
     return
 
 def is_admin(chat_id, user_id):
