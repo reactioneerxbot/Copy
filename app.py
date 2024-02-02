@@ -153,10 +153,7 @@ def process(update):
                 if reaction.get('type') != 'emoji':
                     print(update['message_reaction']['new_reaction'])
                     return
-                    broadcast(update['message_reaction']['user']['id'],
-                              update['message_reaction']['user']['first_name'],
-                              update['message_reaction']['chat']['id'],
-                              '<strong>I will count it as a neutral reaction!</strong>')
+                    #broadcast(update['message_reaction']['user']['id'],update['message_reaction']['user']['first_name'],update['message_reaction']['chat']['id'],'<strong>I will count it as a neutral reaction!</strong>')
                 type = is_good(reaction.get('emoji', 'UNKNOWN'))
                 try:
                     if int(case) != update['message_reaction']['user']['id']:
@@ -186,10 +183,7 @@ def process(update):
                 if reaction.get('type') != 'emoji':
                     print(update['message_reaction']['old_reaction'])
                     return
-                    broadcast(update['message_reaction']['from']['id'],
-                              update['message_reaction']['from']['first_name'],
-                              update['message_reaction']['chat']['id'],
-                              '<strong>I will count it as a neutral reaction!</strong>')
+                    #broadcast(update['message_reaction']['from']['id'],update['message_reaction']['from']['first_name'],update['message_reaction']['chat']['id'],'<strong>I will count it as a neutral reaction!</strong>')
                 type = is_good(reaction.get('emoji', 'UNKNOWN'))
                 try:
                     if int(case) != update['message_reaction']['user']['id']:
