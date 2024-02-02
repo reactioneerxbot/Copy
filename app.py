@@ -7,8 +7,8 @@ from flask import Flask, request
 BOT_TOKEN = "6773788903:AAETlP7Hpt1mho2KibSjydZQneF212Jrzt4"
 BASE_TELEGRAM_URL = 'https://api.telegram.org/bot6773788903:AAETlP7Hpt1mho2KibSjydZQneF212Jrzt4/'
 ADMIN = 5934725286
-GOOD = ['👍', '🤣', '❤', '🔥', '🥰', '👏', '😁', '🎉', '🙏', '🕊', '🤩', '🐳', '💯', '😍', '❤️', '💋', '😇', '🤗', '💘', '😘', '🏆', '⚡', '🤝', '👨‍💻', '🫡', '😘', '😎']
-BAD = ['👎', '😱', '🤬', '😢', '🤮', '💩', '😭', '😈', '😴', '😡', '🤔', '🤯', '🎃', '👻', '🥱', '🥴', '🌭', '🤣', '🍌', '💔', '🍓', '🍾', '🖕', '😨', '🙄', '🌚', '🤪', '💊']
+GOOD = ['👍', '🤣', '❤', '🔥', '🥰', '👏', '😁', '🎉', '🙏', '🕊', '🤩', '🐳', '💯', '😍', '❤️', '💋', '😇', '🤗', '💘', '😘', '🏆', '⚡','🤝', '👨‍💻', '🫡', '😘', '😎']
+BAD = ['👎', '😱', '🤬', '😢', '🤮', '💩', '😭', '😈', '😴', '😡', '🤔', '🤯', '🎃', '👻', '🥱', '🥴', '🌭', '🤣', '🍌', '💔', '🍓', '🍾','🖕', '😨', '🙄', '🌚', '🤪', '💊']
 
 app = Flask(__name__)
 
@@ -19,53 +19,70 @@ def handle_webhook():
         return 'Success!'
     except Exception as e:
         return e
+
+
 def process(update):
     if 'message' in update:
         print(update['message']['chat']['id'])
         if 'text' in update['message'] and 'chat' in update['message'] and (update['message']['chat']['type'] == 'group' or update['message']['chat']['type'] == 'supergroup'):
             if update['message']['text'] == '/include@reactioner_bot':
                 if included(update['message']['from']['id']) == 1:
-                    broadcast(update['message']['from']['id'], update['message']['from']['first_name'], update['message']['chat']['id'], '<em>You have already enrolled.</em>')
+                    broadcast(update['message']['from']['id'], update['message']['from']['first_name'],
+                              update['message']['chat']['id'], '<em>You have already enrolled.</em>')
                 elif included(update['message']['from']['id']) == 0:
                     with open(f"{update['message']['from']['id']}.txt", 'r') as file:
                         line = file.readline().split()
                     with open(f"{update['message']['from']['id']}.txt", 'w') as file:
                         file.write(f"I {line[1]} {line[2]} {line[3]} {line[4]} {line[5]}")
-                    broadcast(update['message']['from']['id'], update['message']['from']['first_name'], update['message']['chat']['id'],'<em>Welcome back. You enrolled successfully.</em>')
+                    broadcast(update['message']['from']['id'], update['message']['from']['first_name'],
+                              update['message']['chat']['id'], '<em>Welcome back. You enrolled successfully.</em>')
                     with open('user.txt', 'a') as file:
-                        file.write(f"{update['message']['from']['id']} {update['message']['from']['first_name'].split()[0]} {update['message']['chat']['id']}\n")
+                        file.write(
+                            f"{update['message']['from']['id']} {update['message']['from']['first_name'].split()[0]} {update['message']['chat']['id']}\n")
                 else:
                     with open(f"{update['message']['from']['id']}.txt", 'w') as file:
                         file.write(f"I {0} {0} {0} {0} {0}")
-                    broadcast(update['message']['from']['id'], update['message']['from']['first_name'], update['message']['chat']['id'], '<em>You enrolled successfully.</em>')
+                    broadcast(update['message']['from']['id'], update['message']['from']['first_name'],
+                              update['message']['chat']['id'], '<em>You enrolled successfully.</em>')
                     with open('user.txt', 'a') as file:
-                        file.write(f"{update['message']['from']['id']} {update['message']['from']['first_name'].split()[0]} {update['message']['chat']['id']}\n")
-                requests.post(f"https://api.telegram.org/bot{BOT_TOKEN}/deleteMessage?chat_id={update['message']['chat']['id']}&message_id={update['message']['message_id']}")
+                        file.write(
+                            f"{update['message']['from']['id']} {update['message']['from']['first_name'].split()[0]} {update['message']['chat']['id']}\n")
+                requests.post(
+                    f"https://api.telegram.org/bot{BOT_TOKEN}/deleteMessage?chat_id={update['message']['chat']['id']}&message_id={update['message']['message_id']}")
             elif update['message']['text'] == '/exclude@reactioner_bot':
                 if included(update['message']['from']['id']) == 1:
                     with open(f"{update['message']['from']['id']}.txt", 'r') as file:
                         line = file.readline().split()
                     with open(f"{update['message']['from']['id']}.txt", 'w') as file:
                         file.write(f"E {line[1]} {line[2]} {line[3]} {line[4]} {line[5]}")
-                    broadcast(update['message']['from']['id'], update['message']['from']['first_name'], update['message']['chat']['id'],'<em>Bye you stopped enrolling.</em>')
+                    broadcast(update['message']['from']['id'], update['message']['from']['first_name'],
+                              update['message']['chat']['id'], '<em>Bye you stopped enrolling.</em>')
                     with open('user.txt', 'r') as file:
                         lines = file.readlines()
                     updated = [line for line in lines if str(update['message']['from']['id']) not in line]
                     with open('user.txt', 'w') as file:
                         file.writelines(updated)
                 elif included(update['message']['from']['id']) == 0:
-                    broadcast(update['message']['from']['id'], update['message']['from']['first_name'], update['message']['chat']['id'],'<em>You have already stopped enrolling.</em>')
+                    broadcast(update['message']['from']['id'], update['message']['from']['first_name'],
+                              update['message']['chat']['id'], '<em>You have already stopped enrolling.</em>')
                 else:
-                    broadcast(update['message']['from']['id'], update['message']['from']['first_name'], update['message']['chat']['id'],'<em>You have not started enrolling at all.</em>')
-                requests.post(f"https://api.telegram.org/bot{BOT_TOKEN}/deleteMessage?chat_id={update['message']['chat']['id']}&message_id={update['message']['message_id']}")
+                    broadcast(update['message']['from']['id'], update['message']['from']['first_name'],
+                              update['message']['chat']['id'], '<em>You have not started enrolling at all.</em>')
+                requests.post(
+                    f"https://api.telegram.org/bot{BOT_TOKEN}/deleteMessage?chat_id={update['message']['chat']['id']}&message_id={update['message']['message_id']}")
             elif update['message']['text'] == '/stats@reactioner_bot':
                 if included(update['message']['from']['id']) == 1:
                     with open(f"{update['message']['from']['id']}.txt", 'r') as file:
                         line = file.readline().split()
-                    broadcast(update['message']['from']['id'], update['message']['from']['first_name'], update['message']['chat']['id'], f"<strong>Your statistics:</strong>\n\n<em>Positive reactions:</em> {line[1]}\n<em>Negative reactions:</em> {line[2]}\n<em>Neutral reactions:</em> {line[4]}\n<em>Self reactions:</em> {line[5]}\n\n<strong>Total reactions you got:</strong> {int(line[1]) + int(line[2]) + int(line[4]) + int(line[5])}\n<strong>Total reactions you put:</strong> {line[3]}")
+                    broadcast(update['message']['from']['id'], update['message']['from']['first_name'],
+                              update['message']['chat']['id'],
+                              f"<strong>Your statistics:</strong>\n\n<em>Positive reactions:</em> {line[1]}\n<em>Negative reactions:</em> {line[2]}\n<em>Neutral reactions:</em> {line[4]}\n<em>Self reactions:</em> {line[5]}\n\n<strong>Total reactions you got:</strong> {int(line[1]) + int(line[2]) + int(line[4]) + int(line[5])}\n<strong>Total reactions you put:</strong> {line[3]}")
                 else:
-                    broadcast(update['message']['from']['id'], update['message']['from']['first_name'], update['message']['chat']['id'], f"<strong>You have not included.</strong>\n<em>Please /include@reactioner_bot</em>")
-                requests.post(f"https://api.telegram.org/bot{BOT_TOKEN}/deleteMessage?chat_id={update['message']['chat']['id']}&message_id={update['message']['message_id']}")
+                    broadcast(update['message']['from']['id'], update['message']['from']['first_name'],
+                              update['message']['chat']['id'],
+                              f"<strong>You have not included.</strong>\n<em>Please /include@reactioner_bot</em>")
+                requests.post(
+                    f"https://api.telegram.org/bot{BOT_TOKEN}/deleteMessage?chat_id={update['message']['chat']['id']}&message_id={update['message']['message_id']}")
             elif update['message']['text'] == '/results@reactioner_bot':
                 if is_admin(update['message']['chat']['id'], update['message']['from']['id']):
                     group = update['message']['chat']['id']
@@ -112,8 +129,10 @@ def process(update):
                     ret += '\n\n<strong>Value coefficient:</strong>'
                     for key, value in islice(set6.items(), 5):
                         ret += '\n<em>' + key + '</em>' + str(value)
-                    broadcast(update['message']['from']['id'], update['message']['from']['first_name'],update['message']['chat']['id'], ret)
-                requests.post(f"https://api.telegram.org/bot{BOT_TOKEN}/deleteMessage?chat_id={update['message']['chat']['id']}&message_id={update['message']['message_id']}")
+                    broadcast(update['message']['from']['id'], update['message']['from']['first_name'],
+                              update['message']['chat']['id'], ret)
+                requests.post(
+                    f"https://api.telegram.org/bot{BOT_TOKEN}/deleteMessage?chat_id={update['message']['chat']['id']}&message_id={update['message']['message_id']}")
             elif update['message']['text'] == '/INITIALIZE' and update['message']['from']['id'] == ADMIN:
                 initialize()
                 broadcast(ADMIN, 'Admin', update['message']['chat']['id'], '<strong>System restarted!</strong>')
@@ -126,11 +145,16 @@ def process(update):
         append(f"{update['message']['message_id']} {update['message']['from']['id']}")
     elif 'message_reaction' in update:
         print('reaction is captured')
-        if 'chat' in update['message_reaction'] and (update['message_reaction']['chat']['type'] == 'group' or update['message_reaction']['chat']['type'] == 'supergroup') and included(update['message_reaction']['user']['id']):
+        if 'chat' in update['message_reaction'] and (
+                update['message_reaction']['chat']['type'] == 'group' or update['message_reaction']['chat'][
+            'type'] == 'supergroup') and included(update['message_reaction']['user']['id']):
             case = fetch(update['message_reaction']['message_id'])
             for reaction in update['message_reaction']['new_reaction']:
                 if reaction.get('type') != 'emoji':
-                    broadcast(update['message_reaction']['user']['id'], update['message_reaction']['user']['first_name'], update['message_reaction']['chat']['id'],'<strong>I will count it as a neutral reaction!</strong>')
+                    broadcast(update['message_reaction']['user']['id'],
+                              update['message_reaction']['user']['first_name'],
+                              update['message_reaction']['chat']['id'],
+                              '<strong>I will count it as a neutral reaction!</strong>')
                 type = is_good(reaction.get('emoji', 'UNKNOWN'))
                 try:
                     if int(case) != update['message_reaction']['user']['id']:
@@ -158,7 +182,10 @@ def process(update):
                     pass
             for reaction in update['message_reaction']['old_reaction']:
                 if reaction.get('type') != 'emoji':
-                    broadcast(update['message_reaction']['from']['id'], update['message_reaction']['from']['first_name'], update['message_reaction']['chat']['id'],'<strong>I will count it as a neutral reaction!</strong>')
+                    broadcast(update['message_reaction']['from']['id'],
+                              update['message_reaction']['from']['first_name'],
+                              update['message_reaction']['chat']['id'],
+                              '<strong>I will count it as a neutral reaction!</strong>')
                 type = is_good(reaction.get('emoji', 'UNKNOWN'))
                 try:
                     if int(case) != update['message_reaction']['user']['id']:
@@ -184,6 +211,9 @@ def process(update):
                                 file.write(f"{line[0]} {line[1]} {line[2]} {line[3]} {str(int(line[4]) - 1)} {line[5]}")
                 except:
                     pass
+    elif 'text' in update['message'] and 'chat' in update['message'] and update['message']['chat']['type'] == 'private':
+        private(update['message']['from']['id'])
+
 def included(user_id):
     try:
         with open(f"{user_id}.txt", 'r') as file:
@@ -193,6 +223,8 @@ def included(user_id):
                 return 0
     except:
         return -1
+
+
 def append(line):
     with open('messages.txt', 'r') as file:
         lines = file.readlines()
@@ -201,12 +233,17 @@ def append(line):
     # Append the new line
     with open('messages.txt', 'a') as file:
         file.write(line + '\n')
+    return
+
+
 def fetch(message_id):
     with open('messages.txt', 'r') as file:
         for line in file.readlines():
             if str(line.split()[0]) == str(message_id):
                 return line.split()[1]
     return -1
+
+
 def is_good(emoji):
     for sample in GOOD:
         if emoji == sample:
@@ -215,6 +252,8 @@ def is_good(emoji):
         if emoji == sample:
             return -1
     return 0
+
+
 def broadcast(user_id, name, group, message):
     m = f"<a href='tg://user?id={user_id}'>{name}</a> ! "
     params = {
@@ -222,7 +261,8 @@ def broadcast(user_id, name, group, message):
         'text': m + message,
         'parse_mode': 'HTML',
     }
-    id_to_react = requests.post(f'https://api.telegram.org/bot{BOT_TOKEN}/sendMessage', params=params).json().get('result').get('message_id')
+    id_to_react = requests.post(f'https://api.telegram.org/bot{BOT_TOKEN}/sendMessage', params=params).json().get(
+        'result').get('message_id')
     print(id_to_react)
     params = {
         'chat_id': group,
@@ -231,31 +271,51 @@ def broadcast(user_id, name, group, message):
         'reaction': json.dumps([{'type': 'emoji', 'emoji': '🔥'}])
     }
     print(requests.post(f'https://api.telegram.org/bot{BOT_TOKEN}/setMessageReaction', params=params).json())
+    return
+
+def private(chat_id):
+    params = {"chat_id": chat_id,"text": "You need to add me to your group. Press the 'Add to Group' button below and select your group.","reply_markup": json.dumps({"keyboard": [[{"text": "Add to Group","request_chat": {"request_id": 1, "chat_is_channel": False,"user_administrator_rights": {"can_manage_chat": True,"can_invite_users": True,"can_delete_messages": True,"can_promote_members": True,"can_restrict_members": True,"can_pin_messages": True,"can_manage_topics": True},"bot_administrator_rights": {"can_manage_chat": True,"can_invite_users": True,"can_delete_messages": True,"can_promote_members": True,"can_restrict_members": True,"can_pin_messages": True,"can_manage_topics": True}}}]],"resize_keyboard": True})}
+    print(requests.post(f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage", json=params).json())
+    return
 
 def is_admin(chat_id, user_id):
-        if user_id == ADMIN or requests.get(f'https://api.telegram.org/bot{BOT_TOKEN}/getChatMember?chat_id={chat_id}&user_id={user_id}').json()['result']['status'] in ['administrator', 'creator']:
-            return True
-        else:
-            return False
+    if user_id == ADMIN or requests.get(
+            f'https://api.telegram.org/bot{BOT_TOKEN}/getChatMember?chat_id={chat_id}&user_id={user_id}').json()[
+        'result']['status'] in ['administrator', 'creator']:
+        return True
+    else:
+        return False
+
 
 def initialize():
     with open('messages.txt', 'w') as file:
         file.write('1234 7777777777\n')
+    return
+
+
 def send_file(user_id):
     with open(f'{user_id}.txt', 'r') as file:
-        requests.post(f"https://api.telegram.org/bot{BOT_TOKEN}/sendDocument", params={'chat_id': ADMIN},files={'document': (f'{user_id}.txt', io.StringIO(''.join(file.readlines())))})
+        requests.post(f"https://api.telegram.org/bot{BOT_TOKEN}/sendDocument", params={'chat_id': ADMIN},
+                      files={'document': (f'{user_id}.txt', io.StringIO(''.join(file.readlines())))})
     file.close()
     return
+
+
 def messages():
     with open(f'messages.txt', 'r') as file:
-        requests.post(f"https://api.telegram.org/bot{BOT_TOKEN}/sendDocument", params={'chat_id': ADMIN},files={'document': ('Messages.txt', io.StringIO(''.join(file.readlines())))})
+        requests.post(f"https://api.telegram.org/bot{BOT_TOKEN}/sendDocument", params={'chat_id': ADMIN},
+                      files={'document': ('Messages.txt', io.StringIO(''.join(file.readlines())))})
     file.close()
     return
+
+
 def users():
     with open(f'user.txt', 'r') as file:
-        requests.post(f"https://api.telegram.org/bot{BOT_TOKEN}/sendDocument", params={'chat_id': ADMIN},files={'document': ('Users.txt', io.StringIO(''.join(file.readlines())))})
+        requests.post(f"https://api.telegram.org/bot{BOT_TOKEN}/sendDocument", params={'chat_id': ADMIN},
+                      files={'document': ('Users.txt', io.StringIO(''.join(file.readlines())))})
     file.close()
     return
-    
+
+
 if __name__ == '__main__':
     app.run(debug=True)
