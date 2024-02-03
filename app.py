@@ -18,7 +18,8 @@ def handle_webhook():
         process(json.loads(request.get_data()))
         return 'Success!'
     except Exception as e:
-        return e
+        print(e)
+        return -1
 
 
 def process(update):
