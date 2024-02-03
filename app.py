@@ -99,6 +99,8 @@ def process(update):
                         if int(l.split()[2]) == group:
                             with open(f"{l.split()[0]}.txt", 'r') as f:
                                 line = f.readline().split()
+                            if line[0] == 'E':
+                                break
                             set3[l.split()[1] + " -> "] = int(line[3])
                             set1[l.split()[1] + " -> "] = int(line[1])
                             set2[l.split()[1] + " -> "] = int(line[2])
