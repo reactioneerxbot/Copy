@@ -19,7 +19,7 @@ def handle_webhook():
         return 'Success!'
     except Exception as e:
         print(e)
-        return -1
+        return 'Error'
 
 
 def process(update):
