@@ -35,7 +35,7 @@ def process(update):
                     with open(f"{update['message']['from']['id']}.txt", 'r') as file:
                         line = file.readline().split()
                     with open(f"{update['message']['from']['id']}.txt", 'w') as file:
-                        file.write(f"I {line[1]} {line[2]} {line[3]} {line[4]} {line[5]}")
+                        file.write(f"I {line[1]} {line[2]} {line[3]} {line[4]} {line[5]} {line[6]}")
                     broadcast(update['message']['from']['id'], update['message']['from']['first_name'],
                               update['message']['chat']['id'], '<em>Welcome back. You enrolled successfully.</em>')
                     with open('user.txt', 'a') as file:
@@ -43,7 +43,7 @@ def process(update):
                             f"{update['message']['from']['id']} {update['message']['from']['first_name'].split()[0]} {update['message']['chat']['id']}\n")
                 else:
                     with open(f"{update['message']['from']['id']}.txt", 'w') as file:
-                        file.write(f"I {0} {0} {0} {0} {0}")
+                        file.write(f"I {0} {0} {0} {0} {0} {0}")
                     broadcast(update['message']['from']['id'], update['message']['from']['first_name'],
                               update['message']['chat']['id'], '<em>You enrolled successfully.</em>')
                     with open('user.txt', 'a') as file:
@@ -56,7 +56,7 @@ def process(update):
                     with open(f"{update['message']['from']['id']}.txt", 'r') as file:
                         line = file.readline().split()
                     with open(f"{update['message']['from']['id']}.txt", 'w') as file:
-                        file.write(f"E {line[1]} {line[2]} {line[3]} {line[4]} {line[5]}")
+                        file.write(f"E {line[1]} {line[2]} {line[3]} {line[4]} {line[5]} {line[6]}")
                     broadcast(update['message']['from']['id'], update['message']['from']['first_name'],
                               update['message']['chat']['id'], '<em>Bye you stopped enrolling.</em>')
                     with open('user.txt', 'r') as file:
@@ -107,8 +107,8 @@ def process(update):
                             set2[l.split()[1] + " -> "] = int(line[2])
                             set4[l.split()[1] + " -> "] = int(line[4])
                             set5[l.split()[1] + " -> "] = int(line[5])
-                            if int(line[3]) != 0:
-                                set6[l.split()[1] + " -> "] = float((int(line[1]) - int(line[2])) / int(line[3]))
+                            if int(line[3]) != 0 and  int(line[6]) != 0:
+                                set6[l.split()[1] + " -> "] = float((int(line[1]) - int(line[2])) / (int(line[3]) * int(line[6])))
                     set1 = dict(sorted(set1.items(), key=lambda item: item[1], reverse=True))
                     set2 = dict(sorted(set2.items(), key=lambda item: item[1], reverse=True))
                     set3 = dict(sorted(set3.items(), key=lambda item: item[1], reverse=True))
@@ -148,9 +148,7 @@ def process(update):
                 users()
         append(f"{update['message']['message_id']} {update['message']['from']['id']}")
     elif 'message_reaction' in update:
-        if 'chat' in update['message_reaction'] and (
-                update['message_reaction']['chat']['type'] == 'group' or update['message_reaction']['chat'][
-            'type'] == 'supergroup') and included(update['message_reaction']['user']['id']):
+        if 'chat' in update['message_reaction'] and (update['message_reaction']['chat']['type'] == 'group' or update['message_reaction']['chat']['type'] == 'supergroup') and included(update['message_reaction']['user']['id']):
             case = fetch(update['message_reaction']['message_id'])
             for reaction in update['message_reaction']['new_reaction']:
                 if reaction.get('type') != 'emoji':
@@ -163,23 +161,23 @@ def process(update):
                         with open(f"{update['message_reaction']['user']['id']}.txt", 'r') as file:
                             line = file.readline().split()
                         with open(f"{str(update['message_reaction']['user']['id']).strip()}.txt", 'w') as file:
-                            file.write(f"I {line[1]} {line[2]} {str(int(line[3]) + 1)} {line[4]} {line[5]}")
+                            file.write(f"I {line[1]} {line[2]} {str(int(line[3]) + 1)} {line[4]} {line[5]} {line[6]}")
                     else:
                         with open(f"{update['message_reaction']['user']['id']}.txt", 'r') as file:
                             line = file.readline().split()
                         with open(f"{str(update['message_reaction']['user']['id']).strip()}.txt", 'w') as file:
-                            file.write(f"I {line[1]} {line[2]} {line[3]} {line[4]} {str(int(line[5]) + 1)}")
+                            file.write(f"I {line[1]} {line[2]} {line[3]} {line[4]} {str(int(line[5]) + 1)} {line[6]}")
                         break
                     if case != -1:
                         with open(f"{case}.txt", 'r') as file:
                             line = file.readline().split()
                         with open(f"{case}.txt", 'w') as file:
                             if type == -1:
-                                file.write(f"{line[0]} {line[1]} {str(int(line[2]) + 1)} {line[3]} {line[4]} {line[5]}")
+                                file.write(f"{line[0]} {line[1]} {str(int(line[2]) + 1)} {line[3]} {line[4]} {line[5]} {line[6]}")
                             elif type == 1:
-                                file.write(f"{line[0]} {str(int(line[1]) + 1)} {line[2]} {line[3]} {line[4]} {line[5]}")
+                                file.write(f"{line[0]} {str(int(line[1]) + 1)} {line[2]} {line[3]} {line[4]} {line[5]} {line[6]}")
                             else:
-                                file.write(f"{line[0]} {line[1]} {line[2]} {line[3]} {str(int(line[4]) + 1)} {line[5]}")
+                                file.write(f"{line[0]} {line[1]} {line[2]} {line[3]} {str(int(line[4]) + 1)} {line[5]} {line[6]}")
                 except:
                     pass
             for reaction in update['message_reaction']['old_reaction']:
@@ -193,23 +191,23 @@ def process(update):
                         with open(f"{update['message_reaction']['user']['id']}.txt", 'r') as file:
                             line = file.readline().split()
                         with open(f"{str(update['message_reaction']['user']['id']).strip()}.txt", 'w') as file:
-                            file.write(f"I {line[1]} {line[2]} {str(int(line[3]) - 1)} {line[4]} {line[5]}")
+                            file.write(f"I {line[1]} {line[2]} {str(int(line[3]) - 1)} {line[4]} {line[5]} {line[6]}")
                     else:
                         with open(f"{update['message_reaction']['user']['id']}.txt", 'r') as file:
                             line = file.readline().split()
                         with open(f"{str(update['message_reaction']['user']['id']).strip()}.txt", 'w') as file:
-                            file.write(f"I {line[1]} {line[2]} {line[3]} {line[4]} {str(int(line[5]) - 1)}")
+                            file.write(f"I {line[1]} {line[2]} {line[3]} {line[4]} {str(int(line[5]) - 1)} {line[6]}")
                         break
                     if case != -1:
                         with open(f"{case}.txt", 'r') as file:
                             line = file.readline().split()
                         with open(f"{case}.txt", 'w') as file:
                             if type == -1:
-                                file.write(f"{line[0]} {line[1]} {str(int(line[2]) - 1)} {line[3]} {line[4]} {line[5]}")
+                                file.write(f"{line[0]} {line[1]} {str(int(line[2]) - 1)} {line[3]} {line[4]} {line[5]} {line[6]}")
                             elif type == 1:
-                                file.write(f"{line[0]} {str(int(line[1]) - 1)} {line[2]} {line[3]} {line[4]} {line[5]}")
+                                file.write(f"{line[0]} {str(int(line[1]) - 1)} {line[2]} {line[3]} {line[4]} {line[5]} {line[6]}")
                             else:
-                                file.write(f"{line[0]} {line[1]} {line[2]} {line[3]} {str(int(line[4]) - 1)} {line[5]}")
+                                file.write(f"{line[0]} {line[1]} {line[2]} {line[3]} {str(int(line[4]) - 1)} {line[5]} {line[6]}")
                 except:
                     pass
 
@@ -224,13 +222,18 @@ def included(user_id):
         return -1
 
 
-def append(line):
+def append(initial_line):
     with open('messages.txt', 'r') as file:
         lines = file.readlines()
     if len(lines) >= 1000:
         lines.pop(0)
     with open('messages.txt', 'a') as file:
-        file.write(line + '\n')
+        file.write(initial_line + '\n')
+    if included(initial_line.split()[1]):
+        with open(f"{initial_line.split()[1]}.txt", 'r') as file:
+            line = file.readline().split()
+        with open(f"{initial_line.split()[1]}.txt", 'w') as file:
+            file.write(f"{line[0]} {line[1]} {line[2]} {line[3]} {line[4]} {line[5]} {str(int(line[6]) + 1)}")
     return
 
 
@@ -292,24 +295,21 @@ def initialize():
 
 def send_file(user_id):
     with open(f'{user_id}.txt', 'r') as file:
-        requests.post(f"https://api.telegram.org/bot{BOT_TOKEN}/sendDocument", params={'chat_id': ADMIN},
-                      files={'document': (f'{user_id}.txt', io.StringIO(''.join(file.readlines())))})
+        requests.post(f"https://api.telegram.org/bot{BOT_TOKEN}/sendDocument", params={'chat_id': ADMIN},files={'document': (f'{user_id}.txt', io.StringIO(''.join(file.readlines())))})
     file.close()
     return
 
 
 def messages():
     with open(f'messages.txt', 'r') as file:
-        requests.post(f"https://api.telegram.org/bot{BOT_TOKEN}/sendDocument", params={'chat_id': ADMIN},
-                      files={'document': ('Messages.txt', io.StringIO(''.join(file.readlines())))})
+        requests.post(f"https://api.telegram.org/bot{BOT_TOKEN}/sendDocument", params={'chat_id': ADMIN},files={'document': ('Messages.txt', io.StringIO(''.join(file.readlines())))})
     file.close()
     return
 
 
 def users():
     with open(f'user.txt', 'r') as file:
-        requests.post(f"https://api.telegram.org/bot{BOT_TOKEN}/sendDocument", params={'chat_id': ADMIN},
-                      files={'document': ('Users.txt', io.StringIO(''.join(file.readlines())))})
+        requests.post(f"https://api.telegram.org/bot{BOT_TOKEN}/sendDocument", params={'chat_id': ADMIN},files={'document': ('Users.txt', io.StringIO(''.join(file.readlines())))})
     file.close()
     return
 
