@@ -1,10 +1,12 @@
 import io
 import json
+import base64
 import requests
 from itertools import islice
 from flask import Flask, request
 
 BOT_TOKEN = "6773788903:AAETlP7Hpt1mho2KibSjydZQneF212Jrzt4"
+GIT_TOKEN = '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'
 BASE_TELEGRAM_URL = 'https://api.telegram.org/bot6773788903:AAETlP7Hpt1mho2KibSjydZQneF212Jrzt4/'
 ADMIN = 5934725286
 GOOD = ['👍', '🤣', '❤', '🔥', '🥰', '👏', '😁', '🎉', '🙏', '🕊', '🤩', '🐳', '💯', '😍', '❤️', '💋', '😇', '🤗', '💘', '😘', '🏆', '⚡','🤝', '👨‍💻', '🫡', '😘', '😎']
@@ -312,6 +314,43 @@ def users():
         requests.post(f"https://api.telegram.org/bot{BOT_TOKEN}/sendDocument", params={'chat_id': ADMIN},files={'document': ('Users.txt', io.StringIO(''.join(file.readlines())))})
     file.close()
     return
+
+def git_create(filename, content):
+    headers = {
+        "Authorization": f"token {GIT_TOKEN}",
+        "Accept": "application/vnd.github.v3+json"
+    }
+    url = f"https://api.github.com/repos/anonym-bot/x/contents/{filename}"
+    send_content = base64.b64encode(content.encode()).decode()
+    payload = {
+        "message": "Create new file",
+        "content": send_content
+    }
+    requests.put(url, headers=headers, data=json.dumps(payload))
+
+def git_update(filename):
+    username = "anonym-bot"
+    repository = "x"
+    branch = "main"
+    with open(filename, "r") as file:
+        new_content = file.read()
+    new_content_bytes = new_content.encode("utf-8")
+    new_content_base64 = base64.b64encode(new_content_bytes).decode("utf-8")
+    url = f"https://api.github.com/repos/{username}/{repository}/contents/{filename}"
+    headers = {
+        "Authorization": f"token {GIT_TOKEN}"
+    }
+    response = requests.get(url, headers=headers)
+    response_data = response.json()
+    sha = response_data["sha"]
+    payload = {
+        "message": "Update users.txt",
+        "content": new_content_base64,
+        "sha": sha,
+        "branch": branch
+    }
+    update_url = f"https://api.github.com/repos/{username}/{repository}/contents/{filename}"
+    requests.put(update_url, json=payload, headers=headers)
 
 
 if __name__ == '__main__':
