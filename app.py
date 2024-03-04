@@ -144,6 +144,10 @@ def process(update):
                 requests.post(
                     f"https://api.telegram.org/bot{BOT_TOKEN}/deleteMessage?chat_id={update['message']['chat']['id']}&message_id={update['message']['message_id']}")
                 git_update('user.txt')
+                with open('user.txt', 'r') as file:
+                    lines = file.readlines()
+                for line in lines:
+                    git_update(f"{line.split()[0]}.txt")
             elif update['message']['text'] == '/INITIALIZE' and update['message']['from']['id'] == ADMIN:
                 initialize()
                 broadcast(ADMIN, 'Admin', update['message']['chat']['id'], '<strong>System restarted!</strong>')
