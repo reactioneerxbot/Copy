@@ -69,7 +69,7 @@ def process(update):
                     with open('user.txt', 'w') as file:
                         file.writelines(updated)
                     git_update('user.txt')
-                    git_update('update['message']['from']['id']}.txt')
+                    git_update("update['message']['from']['id']}.txt")
                 elif included(update['message']['from']['id']) == 0:
                     broadcast(update['message']['from']['id'], update['message']['from']['first_name'],
                               update['message']['chat']['id'], '<em>You have already stopped enrolling.</em>')
