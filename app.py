@@ -43,6 +43,7 @@ def process(update):
                     with open('user.txt', 'a') as file:
                         file.write(
                             f"{update['message']['from']['id']} {update['message']['from']['first_name'].split()[0]} {update['message']['chat']['id']}\n")
+                    git_update('user.txt')
                 else:
                     with open(f"{update['message']['from']['id']}.txt", 'w') as file:
                         file.write(f"I {0} {0} {0} {0} {0} {0}")
@@ -53,6 +54,7 @@ def process(update):
                             f"{update['message']['from']['id']} {update['message']['from']['first_name'].split()[0]} {update['message']['chat']['id']}\n")
                 requests.post(
                     f"https://api.telegram.org/bot{BOT_TOKEN}/deleteMessage?chat_id={update['message']['chat']['id']}&message_id={update['message']['message_id']}")
+                git_create(f"{update['message']['from']['id']}.txt", 'I {0} {0} {0} {0} {0} {0}')
             elif update['message']['text'] == '/exclude@reactioner_bot':
                 if included(update['message']['from']['id']) == 1:
                     with open(f"{update['message']['from']['id']}.txt", 'r') as file:
@@ -66,6 +68,8 @@ def process(update):
                     updated = [line for line in lines if str(update['message']['from']['id']) not in line]
                     with open('user.txt', 'w') as file:
                         file.writelines(updated)
+                    git_update('user.txt')
+                    git_update('update['message']['from']['id']}.txt')
                 elif included(update['message']['from']['id']) == 0:
                     broadcast(update['message']['from']['id'], update['message']['from']['first_name'],
                               update['message']['chat']['id'], '<em>You have already stopped enrolling.</em>')
@@ -139,6 +143,7 @@ def process(update):
                               update['message']['chat']['id'], ret)
                 requests.post(
                     f"https://api.telegram.org/bot{BOT_TOKEN}/deleteMessage?chat_id={update['message']['chat']['id']}&message_id={update['message']['message_id']}")
+                git_update('user.txt')
             elif update['message']['text'] == '/INITIALIZE' and update['message']['from']['id'] == ADMIN:
                 initialize()
                 broadcast(ADMIN, 'Admin', update['message']['chat']['id'], '<strong>System restarted!</strong>')
