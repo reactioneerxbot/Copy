@@ -6,7 +6,7 @@ from itertools import islice
 from flask import Flask, request
 
 BOT_TOKEN = "6773788903:AAETlP7Hpt1mho2KibSjydZQneF212Jrzt4"
-GIT_TOKEN = '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'
+GIT_TOKEN = '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'
 BASE_TELEGRAM_URL = 'https://api.telegram.org/bot6773788903:AAETlP7Hpt1mho2KibSjydZQneF212Jrzt4/'
 ADMIN = 5934725286
 GOOD = ['👍', '🤣', '❤', '🔥', '🥰', '👏', '😁', '🎉', '🙏', '🕊', '🤩', '🐳', '💯', '😍', '❤️', '💋', '😇', '🤗', '💘', '😘', '🏆', '⚡','🤝', '👨‍💻', '🫡', '😘', '😎']
@@ -329,7 +329,7 @@ def git_create(filename, content):
         "Authorization": f"token {GIT_TOKEN}",
         "Accept": "application/vnd.github.v3+json"
     }
-    url = f"https://api.github.com/repos/anonym-bot/x/contents/{filename}"
+    url = f"https://api.github.com/repos/reactioneerxbot/Copy/contents/{filename}"
     send_content = base64.b64encode(content.encode()).decode()
     payload = {
         "message": "Create new file",
@@ -338,8 +338,8 @@ def git_create(filename, content):
     requests.put(url, headers=headers, data=json.dumps(payload))
 
 def git_update(filename):
-    username = "anonym-bot"
-    repository = "x"
+    username = "reactioneerxbot"
+    repository = "Copy"
     branch = "main"
     with open(filename, "r") as file:
         new_content = file.read()
