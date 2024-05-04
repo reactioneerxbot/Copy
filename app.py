@@ -12,7 +12,11 @@ BASE_TELEGRAM_URL = 'https://api.telegram.org/bot6773788903:AAETlP7Hpt1mho2KibSj
 ADMIN = 5934725286
 GOOD = ['👍', '🤣', '❤', '🔥', '🥰', '👏', '😁', '🎉', '🙏', '🕊', '🤩', '🐳', '💯', '😍', '❤️', '💋', '😇', '🤗', '💘', '😘', '🏆', '⚡','🤝', '👨‍💻', '🫡', '😘', '😎']
 BAD = ['👎', '😱', '🤬', '😢', '🤮', '💩', '😭', '😈', '😴', '😡', '🤔', '🤯', '🎃', '👻', '🥱', '🥴', '🌭', '🤣', '🍌', '💔', '🍓', '🍾','🖕', '😨', '🙄', '🌚', '🤪', '💊']
+
+GOOD_TO_REACT = ['👍', '🔥', '😁', '🙏', '🤩', '💯', '😇', '🤗', '🏆', '⚡','🤝', '🫡', '😎']
+
 BLACK_LIST = [1673876488]
+WHITE_LIST = [5934725286]
 
 app = Flask(__name__)
 
@@ -32,6 +36,8 @@ def process(update):
             private(update['message']['from']['id'])
         #elif 'text' in update['message'] and update['message']['from']['id'] in BLACK_LIST:
         #    print(requests.post(f'https://api.telegram.org/bot{BOT_TOKEN}/setMessageReaction',params={'chat_id': update['message']['chat']['id'], 'message_id': update['message']['message_id'], 'is_big': True,'reaction': json.dumps([{'type': 'emoji', 'emoji': BAD[random.randint(0, len(BAD) - 1)]}])}).json())
+        elif 'text' in update['message'] and update['message']['from']['id'] in WHITE_LIST:
+            print(requests.post(f'https://api.telegram.org/bot{BOT_TOKEN}/setMessageReaction',params={'chat_id': update['message']['chat']['id'], 'message_id': update['message']['message_id'], 'is_big': True,'reaction': json.dumps([{'type': 'emoji', 'emoji': GOOD_TO_REACT[random.randint(0, len(GOOD_TO_REACT) - 1)]}])}).json())
         elif 'text' in update['message'] and 'chat' in update['message'] and (update['message']['chat']['type'] == 'group' or update['message']['chat']['type'] == 'supergroup'):
             if update['message']['text'] == '/include@reactioner_bot':
                 if included(update['message']['from']['id']) == 1:
