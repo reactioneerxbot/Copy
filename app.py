@@ -30,8 +30,8 @@ def process(update):
     if 'message' in update:
         if 'text' in update['message'] and 'chat' in update['message'] and update['message']['chat']['type'] == 'private':
             private(update['message']['from']['id'])
-        elif 'text' in update['message'] and update['message']['from']['id'] in BLACK_LIST:
-            print(requests.post(f'https://api.telegram.org/bot{BOT_TOKEN}/setMessageReaction',params={'chat_id': update['message']['chat']['id'], 'message_id': update['message']['message_id'], 'is_big': True,'reaction': json.dumps([{'type': 'emoji', 'emoji': BAD[random.randint(0, len(BAD) - 1)]}])}).json())
+        #elif 'text' in update['message'] and update['message']['from']['id'] in BLACK_LIST:
+        #    print(requests.post(f'https://api.telegram.org/bot{BOT_TOKEN}/setMessageReaction',params={'chat_id': update['message']['chat']['id'], 'message_id': update['message']['message_id'], 'is_big': True,'reaction': json.dumps([{'type': 'emoji', 'emoji': BAD[random.randint(0, len(BAD) - 1)]}])}).json())
         elif 'text' in update['message'] and 'chat' in update['message'] and (update['message']['chat']['type'] == 'group' or update['message']['chat']['type'] == 'supergroup'):
             if update['message']['text'] == '/include@reactioner_bot':
                 if included(update['message']['from']['id']) == 1:
